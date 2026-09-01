@@ -21,7 +21,7 @@ mpl-scatter-density==0.8
 notebook==7.1.2
 notebook_shim==0.2.4
 numexpr==2.11.0
-numpy>=2.1
+numpy
 oauthlib==3.2.2
 pandas==2.2.2
 pandocfilters==1.5.1
