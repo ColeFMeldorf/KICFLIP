@@ -333,6 +333,10 @@ def main() -> None:
     args = parser.parse_args()
 
     folder = Path(args.folder).expanduser().resolve()
+
+    if not folder.endswith("/"):
+        folder = Path(str(folder) + "/")
+
     if not folder.is_dir():
         raise SystemExit(f"Error: '{folder}' is not a folder that exists.")
 
