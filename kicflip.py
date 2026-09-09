@@ -208,6 +208,16 @@ def _assign_unique_slide_partname(prs: Presentation, slide_part) -> None:
         n += 1
     slide_part.partname = PackURI(f"{prefix}{n}{suffix}")
 
+def _extract_text(s):
+
+    for shape in s.shapes:
+        if shape.has_text_frame:
+            for p in shape.text_frame.paragraphs:
+                return p.text
+
+
+
+
 
 def replace_slide_in_template(
     prs: Presentation,
@@ -247,6 +257,8 @@ def replace_slide_in_template(
     a different Presentation object and staple it in here. Instead,
     this creates a genuinely new slide directly inside `prs`.
     """
+
+    extracted_text = _extract_text(prs.slides[index])
     slide_count = len(prs.slides)
     if not (0 <= index < slide_count):
         raise IndexError(
@@ -263,6 +275,8 @@ def replace_slide_in_template(
     # deck -- there's no "insert at position" operation. So we add it
     # at the end first, and move it into place as a second step below.
     new_slide = prs.slides.add_slide(layout_to_reuse)
+    print(dir(new_slide.shapes.title))
+    new_slide.shapes.title.text = extracted_text
 
     # See _assign_unique_slide_partname's docstring: this is the fix
     # for the "Duplicate name" / "needs repair" bug.
@@ -334,7 +348,7 @@ def main() -> None:
 
     folder = Path(args.folder).expanduser().resolve()
 
-    if not folder.endswith("/"):
+    if not folder.name.endswith("/"):
         folder = Path(str(folder) + "/")
 
     if not folder.is_dir():
