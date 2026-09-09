@@ -55,6 +55,6 @@ def make_plot(df, kwds, outpath, title = None):
     plt.ylabel("Value")
     plt.legend()
     plt.title(title, fontsize=20)
-    plt.savefig(outpath + title + ".png")
+    plt.savefig(outpath + title + "_plot.png")
     plt.close()
-    print("Plot for " + title + " saved to: " + outpath + title + ".png")
+    print("Plot for " + title + " saved to: " + outpath + title + "_plot.png")

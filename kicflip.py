@@ -32,13 +32,25 @@ from plotting import _load_xls, make_plot
 register_heif_opener()
 
 
-def find_heic_files(folder: Path) -> list[Path]:
+def find_image_files(folder: Path) -> list[Path]:
     """
-    Return every .heic file directly inside `folder`, sorted by name.
+    Return every .heic, .png, and .jpg/.jpeg file directly inside
+    `folder`, sorted by name (case-insensitive on both the filename
+    and the extension, e.g. "Photo.JPG" and "photo.jpg" are both
+    caught).
     """
-    matches = list(folder.glob("*.heic")) + list(folder.glob("*.HEIC"))
+    patterns = ["*.heic", "*.HEIC", "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG"]
+    anti_patterns = ["*plot*"]
+    matches = []
+    for pattern in patterns:
+        matches.extend([f for f in folder.glob(pattern) if not any(f.match(p) for p in anti_patterns)])
     unique_matches = sorted(set(matches), key=lambda p: p.name.lower())
     return unique_matches
+
+
+# Kept for backwards compatibility with any code that still calls the old name.
+def find_heic_files(folder: Path) -> list[Path]:
+    return find_image_files(folder)
 
 
 def choose_grid_shape(n: int) -> tuple[int, int]:
@@ -275,8 +287,7 @@ def replace_slide_in_template(
     # deck -- there's no "insert at position" operation. So we add it
     # at the end first, and move it into place as a second step below.
     new_slide = prs.slides.add_slide(layout_to_reuse)
-    print(dir(new_slide.shapes.title))
-    new_slide.shapes.title.text = extracted_text
+ #   new_slide.shapes.title.text = extracted_text
 
     # See _assign_unique_slide_partname's docstring: this is the fix
     # for the "Duplicate name" / "needs repair" bug.
@@ -354,9 +365,9 @@ def main() -> None:
     if not folder.is_dir():
         raise SystemExit(f"Error: '{folder}' is not a folder that exists.")
 
-    image_paths = find_heic_files(folder)
+    image_paths = find_image_files(folder)
     if not image_paths:
-        raise SystemExit(f"No .heic files found in '{folder}'.")
+        raise SystemExit(f"No .heic, .png, or .jpg/.jpeg files found in '{folder}'.")
 
     template_path = Path(args.template).expanduser().resolve()
     if not template_path.is_file():
@@ -406,6 +417,7 @@ def main() -> None:
         prs, plot_files, index=5, blank_layout_index=blank_layout_index, label="Plots"
     )
 
+    print("Building plot slide...")
     plot_files_PF = [Path(p) for p in glob.glob(str(folder / "*Perfusion Flows*.png"))]
     plot_files_HAP = [Path(p) for p in glob.glob(str(folder / "*Hepatic Artery Pressures*.png"))]
     plot_files = plot_files_PF + plot_files_HAP
