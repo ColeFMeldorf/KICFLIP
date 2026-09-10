@@ -23,6 +23,7 @@ notebook_shim==0.2.4
 numexpr==2.11.0
 numpy
 oauthlib==3.2.2
+openpyxl
 pandas==2.2.2
 pandocfilters==1.5.1
 pillow==12.3.0
@@ -43,4 +44,3 @@ pywin32==306
 pywin32-ctypes==0.2.3
 pywinpty==2.0.13
 PyYAML==6.0.1
-
