@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 
 def _load_xls(path):
-    df =  pd.read_excel(path, header = 9, engine='openpyxl') # note that XLSX files are 1 indexed in the viewer
+    df =  pd.read_excel(path, header = 9, engine='xlrd') # note that XLSX files are 1 indexed in the viewer
     # drop row 10
     df = df.drop(df.index[1])
     df = df.drop(df.index[0])
