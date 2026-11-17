@@ -104,6 +104,7 @@ def _convert_time_to_Minutes(df, col_name):
     for i, index in enumerate(day_wrap):
         day_delta[index:] = i + 1
     df["Minutes"] += day_delta * 24 * 60
+    df["Hours"] = df["Minutes"] / 60
 
     return df
 
@@ -112,15 +113,17 @@ def make_plot(df, kwds, outpath, title = None):
 
     df = _convert_time_to_Minutes(df, "Time")
     df["Minutes"] = df["Minutes"].astype(float)
+    df["Hours"] = df["Hours"].astype(float)
 
     if isinstance(kwds, str):
         kwds = [kwds]
     if title is None:
         title = kwds[0]
     for kwd in kwds:
-        plt.scatter(df["Minutes"], df[kwd],marker='o', linestyle='-', label = kwd)
+        #plt.scatter(df["Minutes"], df[kwd],marker='o', linestyle='-', label = kwd)
+        plt.scatter(df["Hours"], df[kwd],marker='x', linestyle='-', label = kwd + " (hours)")
     plt.grid()
-    plt.xlabel("Time (minutes)")
+    plt.xlabel("Time (hours)")
     plt.ylabel("Value")
     plt.legend()
     plt.title(title, fontsize=20)
