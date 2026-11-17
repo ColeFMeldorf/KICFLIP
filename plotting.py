@@ -53,7 +53,8 @@ def _read_raw_table(path, header=9):
 def _text_columns_to_values(df):
     """Text exports give strings; convert to the types xlrd would have produced."""
     for c in df.columns:
-        if df[c].dtype != object:
+        # pandas 3 stores text as a "str" dtype rather than object; handle both.
+        if not (pd.api.types.is_object_dtype(df[c]) or pd.api.types.is_string_dtype(df[c])):
             continue
         s = df[c].astype("string").str.strip()
         nums = pd.to_numeric(s, errors="coerce").astype(float)
@@ -89,6 +90,11 @@ def _strip_df_col_whitespace(df):
 
 def _convert_time_to_Minutes(df, col_name):
     # Convert the time column to Minutes
+    if not all(hasattr(t, "hour") for t in df[col_name].dropna()):
+        # Times arrived as text (e.g. "22:55:00"); parse them.
+        df[col_name] = pd.to_datetime(
+            df[col_name].astype(str).str.strip(), errors="coerce", format="mixed"
+        ).dt.time
     df["Minutes"] = df[col_name].apply(
         lambda t: t.hour * 60 + t.minute + t.second / 60
     )
