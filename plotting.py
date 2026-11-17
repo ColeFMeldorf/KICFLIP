@@ -1,4 +1,5 @@
 # Plotting code for Kicflip
+import os
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -123,6 +124,9 @@ def make_plot(df, kwds, outpath, title = None):
     plt.ylabel("Value")
     plt.legend()
     plt.title(title, fontsize=20)
-    plt.savefig(outpath + title + "_plot.png")
+    # os.path.join adds the separator, so this works whether or not the
+    # folder was given with a trailing slash.
+    plot_path = os.path.join(str(outpath), title + "_plot.png")
+    plt.savefig(plot_path)
     plt.close()
-    print("Plot for " + title + " saved to: " + outpath + title + "_plot.png")
+    print("Plot for " + title + " saved to: " + plot_path)

@@ -332,6 +332,8 @@ def grid_slide_populate_and_replace(
     to `image_paths`, and use it to replace slide `index` in `prs`.
     Mutates `prs` in place; does not save.
     """
+    if not image_paths:
+        raise SystemExit(f"Error: no image files found for the '{label}' slide (slide {index}).")
     rows, cols = choose_grid_shape(len(image_paths))
     populate_fn = functools.partial(populate_grid_slide, image_paths=image_paths)
     replace_slide_in_template(prs, index, populate_fn, blank_layout_index=blank_layout_index)
